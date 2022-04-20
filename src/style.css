@@ -1,12 +1,16 @@
 body {
     /* remove margins and scroll bars */
     margin: 0;
+    overflow-x: hidden;
+
   }
   
-  #webgl {
+  .webgl {
     /* tell our scene container to take up the full page */
-    position: absolute;
-    width: 50%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
   
     /*
@@ -15,3 +19,63 @@ body {
     */
     background-color: skyblue;
   }
+  
+.container {
+  position: absolute;
+  top: left;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.title-container {
+  position: absolute;
+  width: 35%;
+  height: auto;
+  left: 0;
+} 
+
+.title {
+  color: azure;
+  padding-left: 4rem;
+  
+}
+
+.title h1 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 5rem;
+
+}
+
+section {
+  min-height: 50vh;
+}
+
+section h2 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.title p {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#explore {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  margin-top: 2rem;
+  border: none;
+  border-radius: 5rem;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 500;
+  background-color: turquoise;
+  text-transform: uppercase;
+}
+
+#scrollProgress {
+  position: fixed;
+  color: red;
+  bottom: 10px;
+  left: 10px;
+  z-index: 99;
+  font-size: 3vh;
+}

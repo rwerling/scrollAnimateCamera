@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
+
+
 /**
  * Base
  */
@@ -90,72 +92,32 @@ scene.add(camera)
  * scrollCamera
  */
 const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
-scrollCamera.position.x = -8
-scrollCamera.position.y = 5
-scrollCamera.position.z = 6
-scrollCamera.lookAt(0,0,0)
 scrollCamera.near = 1
-scrollCamera.far = 15
-scene.add(scrollCamera)
+scrollCamera.far = 13
+//scene.add(scrollCamera)
 
 // scrollCamera helper
 
 const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
 scene.add(scrollCameraHelper);
 
-/**
- * Camera Path Random
- */
+// create path
 
 const curve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( -4, -2, 4 ),
-	new THREE.Vector3( -4, 0, -4 ),
-	new THREE.Vector3( 4, 0, -4 ),
-	new THREE.Vector3( 4, 2, 4 )
-    ],
+	new THREE.Vector3( -4, 1, 4 ),
+	new THREE.Vector3( -4, 2, -4 ),
+	new THREE.Vector3( 4, 4, -4 ),
+	new THREE.Vector3( 4, 6, 4 )],
     true,
-    )
-const points = curve.getPoints( 50 );
+)
+
+const points = curve.getPoints( 10 );
+
+// make path visible
 const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
 const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-
-// Create the final object to add to the scene
 const curveObject = new THREE.Line( geometry, splineMaterial );
-
 scene.add(curveObject)
-
-/**
- * Camera Path Ellipse
- */
-
-const ellipse = new THREE.EllipseCurve(
-	0,  0,            // ax, aY
-	5, 10,           // xRadius, yRadius
-	0,  2 * Math.PI,  // aStartAngle, aEndAngle
-	false,            // aClockwise
-	0                 // aRotation
-);
-
-console.log(ellipse);
-//ellipse.rotation.set(0,1,0);
-
-
-const ellipsePoints = ellipse.getPoints( 50 );
-const ellipseGeometry = new THREE.BufferGeometry().setFromPoints( ellipsePoints );
-
-
-const ellipseMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-
-// Create the final object to add to the scene
-const ellipseObject = new THREE.Line( ellipseGeometry, ellipseMaterial );
-//ellipseObject.rotateZ = Math.PI / 2;
-
-//scene.add(ellipseObject)
-//console.log(ellipseObject);
-
-
-
 
 
 var speed = 0.1
@@ -179,8 +141,64 @@ renderer.outputEncoding = THREE.sRGBEncoding;
  * Orbit Controls
  */
 
-const controls = new OrbitControls( camera, renderer.domElement );
+// const controls = new OrbitControls( camera, renderer.domElement );
 
+
+// Scroll
+
+let scrollPercent;
+
+  //scroll progress
+
+  //  Liner Interpolation
+  //  lerp(min, max, ratio)
+  //  eg,
+  //  lerp(20, 60, .5)) = 40
+  //  lerp(-20, 60, .5)) = 20
+  //  lerp(20, 60, .75)) = 50
+  //  lerp(-20, -10, .1)) = -.19
+  //  
+  // function lerp(x: number, y: number, a: number): number {
+  //   return (1 - a) * x + a * y;
+  // }
+
+  // // Used to fit the lerps to start and end at specific scrolling percentages
+  // function scalePercent(start: number, end: number) {
+  //   return (scrollPercent - start) / (end - start);
+  // }
+
+  // const animationScripts = null;
+  // const animationScripts: { start: number; end: number; func: () => void }[] = []
+
+  //add an animation that moves the camera between 60-80 percent of scroll
+  // animationScripts.push({
+  //   start: 60,
+  //   end: 80,
+  //   func: () => {
+  //       camera.position.x = lerp(0, 5, scalePercent(60, 80))
+  //       camera.position.y = lerp(1, 5, scalePercent(60, 80))
+  //       camera.lookAt(cube.position)
+  //       //console.log(camera.position.x + " " + camera.position.y)
+  //   },
+  // })
+
+  // function playScrollAnimations() {
+  //   animationScripts.forEach((a) => {
+  //       if (scrollPercent >= a.start && scrollPercent < a.end) {
+  //           a.func()
+  //       }
+  //   })
+  // }
+
+document.getElementsByTagName('body')[0].onscroll = function() { 
+    var h = document.documentElement, 
+    b = document.body,
+    st = 'scrollTop',
+    sh = 'scrollHeight';
+    
+    scrollPercent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
+    document.getElementById('scrollProgress').innerHTML = scrollPercent;
+  };
 
 
 /**
@@ -203,7 +221,7 @@ const tick = () =>
     scrollCamera.lookAt(0, 1, 0)
 
     // Render
-    renderer.render(scene, scrollCamera)
+    renderer.render(scene, camera)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
