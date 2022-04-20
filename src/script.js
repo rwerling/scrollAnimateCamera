@@ -144,53 +144,68 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 // const controls = new OrbitControls( camera, renderer.domElement );
 
 
-// Scroll
+
+
+
+//scroll progress
 
 let scrollPercent;
 
-  //scroll progress
+//  Liner Interpolation
+//  lerp(min, max, ratio)
+//  eg,
+//  lerp(20, 60, .5)) = 40
+//  lerp(-20, 60, .5)) = 20
+//  lerp(20, 60, .75)) = 50
+//  lerp(-20, -10, .1)) = -.19
+//  
+function lerp(x, y, a) {
+    return (1 - a) * x + a * y;
+}
 
-  //  Liner Interpolation
-  //  lerp(min, max, ratio)
-  //  eg,
-  //  lerp(20, 60, .5)) = 40
-  //  lerp(-20, 60, .5)) = 20
-  //  lerp(20, 60, .75)) = 50
-  //  lerp(-20, -10, .1)) = -.19
-  //  
-  // function lerp(x: number, y: number, a: number): number {
-  //   return (1 - a) * x + a * y;
-  // }
+//  Used to fit the lerps to start and end at specific scrolling percentages
+function scalePercent(start, end) {
+return (scrollPercent - start) / (end - start);
+}
 
-  // // Used to fit the lerps to start and end at specific scrolling percentages
-  // function scalePercent(start: number, end: number) {
-  //   return (scrollPercent - start) / (end - start);
-  // }
+var animationScripts = [];
 
-  // const animationScripts = null;
-  // const animationScripts: { start: number; end: number; func: () => void }[] = []
 
-  //add an animation that moves the camera between 60-80 percent of scroll
-  // animationScripts.push({
-  //   start: 60,
-  //   end: 80,
-  //   func: () => {
-  //       camera.position.x = lerp(0, 5, scalePercent(60, 80))
-  //       camera.position.y = lerp(1, 5, scalePercent(60, 80))
-  //       camera.lookAt(cube.position)
-  //       //console.log(camera.position.x + " " + camera.position.y)
-  //   },
-  // })
+//var cameraPositionOnPathStart = curve.getPoint(0, pathTarget);
+//var cameraPositionOnPathEnd = curve.getPoint(1, pathTarget);
 
-  // function playScrollAnimations() {
-  //   animationScripts.forEach((a) => {
-  //       if (scrollPercent >= a.start && scrollPercent < a.end) {
-  //           a.func()
-  //       }
-  //   })
-  // }
+//console.log(cameraPositionOnPathEnd);
 
-document.getElementsByTagName('body')[0].onscroll = function() { 
+
+// add an animation that moves the camera between 0-100 percent of scroll
+animationScripts.push({
+start: 0,
+end: 100,
+func: () => {
+    // curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
+    //curve.getPoint(0.1, pathTarget)
+    //curve.getPoint(,pathTarget) = lerp(0, 1, scalePercent(0, 100));
+    //pathTarget = lerp(curve.getPoint(0,pathTarget), curve.getPoint(1,pathTarget), scalePercent(0, 100));
+    //pathTarget = curve.getPoint(0.2,pathTarget)
+    var pathPercent = lerp(0, 1, scalePercent(0, 100));
+    //pathTarget = new THREE.Vector3(3,1,-5);
+    console.log(pathPercent);
+    curve.getPoint(pathPercent, pathTarget);
+
+    //console.log(camera.position.x + " " + camera.position.y)
+},
+})
+
+  function playScrollAnimations() {
+    animationScripts.forEach((a) => {
+        if (scrollPercent >= a.start && scrollPercent < a.end) {
+            a.func()
+        }
+    })
+  }
+
+
+  document.getElementsByTagName('body')[0].onscroll = function() { 
     var h = document.documentElement, 
     b = document.body,
     st = 'scrollTop',
@@ -215,7 +230,8 @@ const tick = () =>
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
     
-    curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
+    playScrollAnimations();
+    //curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
 
     scrollCamera.position.copy(pathTarget)
     scrollCamera.lookAt(0, 1, 0)
