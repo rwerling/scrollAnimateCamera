@@ -2,81 +2,96 @@ import './style.css'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 
 
-/**
- * Base
- */
-// Canvas
+// assign canvas dom element to variable
 const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
 
-/**
- * Cubes
- */
+//create cube geometry
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+// create red material
 const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 
-let mx = -2.5;
-for (let i = 0; i<3; i++){
-    const cubes = new THREE.Mesh(cubeGeometry, material)
-    cubes.position.x = mx;
-    cubes.position.y = 0.5;
-    cubes.position.z = -0.5;
-    scene.add(cubes)
-    mx+=2;
-}
+// Loaders
+
+// Texture loader
+const textureLoader = new THREE.TextureLoader()
+
+// GLTF loader
+const gltfLoader = new GLTFLoader()
+
+// Baked Texture
+ const bakedTexture = textureLoader.load('baked.jpg');
+bakedTexture.flipY = false;
+bakedTexture.encoding = THREE.sRGBEncoding;
+
+//Baked Material
+const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
+
+// Bulb Material
+const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
 
 
+// load street model and apply materials
+gltfLoader.load(
+    'streetAni.glb',
+    function traverseThroughGeometry (gltf) {
+        gltf.scene.traverse(
+            function applyBakedMaterialToAllChildren (child) {
+                child.material = bakedMaterial
+            }
+        )
+        const bulb1Mesh = gltf.scene.children.find(child => child.name === 'bulbs')
+        bulb1Mesh.material = bulbMaterial
+
+        // gltf.scene.scale.set(2, 2, 2)
+        scene.add( ... gltf.scene.children);
+                
+    }
+)
 
 // const axesHelper = new THREE.AxesHelper( 5 );
 // scene.add( axesHelper );
 
 
-/**
- * Grid
- */
-const size = 10;
-const divisions = 10;
-
-const gridHelper = new THREE.GridHelper( size, divisions );
-scene.add( gridHelper );
+// set grid parameters and add grid to scene
+// const size = 15;
+// const divisions = 10;
+// const gridHelper = new THREE.GridHelper( size, divisions );
+// scene.add( gridHelper );
 
 
+//inital canvas sizes
+const sizes = {
+    width: window.innerWidth/1.5,
+    height: window.innerHeight
+}
 
 
-/**
- * Resizer
- */
-
+//resizer
 window.addEventListener('resize', () =>
 {
     // Update sizes
-    sizes.width = window.innerWidth
+    sizes.width = window.innerWidth/1.5
     sizes.height = window.innerHeight
 
-    // Update camera
+    // Update cameras
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
+
+    scrollCamera.aspect = sizes.width / sizes.height
+    scrollCamera.updateProjectionMatrix()
 
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-
 })
-
-
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-}
 
 /**
  * Camera
@@ -91,39 +106,41 @@ scene.add(camera)
 /**
  * scrollCamera
  */
-const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
+const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
 scrollCamera.near = 1
-scrollCamera.far = 13
+scrollCamera.far = 30
 //scene.add(scrollCamera)
 
 // scrollCamera helper
 
-const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
-scene.add(scrollCameraHelper);
+// const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
+// scene.add(scrollCameraHelper);
 
 // create path
 
 const curve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( -4, 1, 4 ),
-	new THREE.Vector3( -4, 2, -4 ),
-	new THREE.Vector3( 4, 4, -4 ),
-	new THREE.Vector3( 4, 6, 4 )],
-    true,
+	new THREE.Vector3( -15, 10, 15 ),
+    new THREE.Vector3( -10, 5, -10 ),
+	new THREE.Vector3( 2, 2, -10 ),
+	new THREE.Vector3( 2.5, 1.5, -4 ),
+	new THREE.Vector3( 2.5, 5, 20 )],
+    false,
 )
 
 const points = curve.getPoints( 10 );
 
+
 // make path visible
-const geometry = new THREE.BufferGeometry().setFromPoints( points );
-const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-const curveObject = new THREE.Line( geometry, splineMaterial );
-scene.add(curveObject)
+// const geometry = new THREE.BufferGeometry().setFromPoints( points );
+// const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+// const curveObject = new THREE.Line( geometry, splineMaterial );
+// scene.add(curveObject)
 
 
-var speed = 0.1
+//var speed = 0.1
 
 var pathTarget = new THREE.Vector3(0,0,0)
-
+var cameraTarget = new THREE.Vector3(-2,2,2)
 
 /**
  * Renderer
@@ -176,21 +193,19 @@ var animationScripts = [];
 
 //console.log(cameraPositionOnPathEnd);
 
+//put camera on path
+curve.getPoint(0, pathTarget);
 
 // add an animation that moves the camera between 0-100 percent of scroll
 animationScripts.push({
 start: 0,
 end: 100,
 func: () => {
-    // curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
-    //curve.getPoint(0.1, pathTarget)
-    //curve.getPoint(,pathTarget) = lerp(0, 1, scalePercent(0, 100));
-    //pathTarget = lerp(curve.getPoint(0,pathTarget), curve.getPoint(1,pathTarget), scalePercent(0, 100));
-    //pathTarget = curve.getPoint(0.2,pathTarget)
     var pathPercent = lerp(0, 1, scalePercent(0, 100));
-    //pathTarget = new THREE.Vector3(3,1,-5);
-    console.log(pathPercent);
+    //console.log(pathPercent);
     curve.getPoint(pathPercent, pathTarget);
+    //cameraTarget.x = lerp(0, -4, scalePercent(0, 100));
+    console.log(cameraTarget);
 
     //console.log(camera.position.x + " " + camera.position.y)
 },
@@ -234,13 +249,16 @@ const tick = () =>
     //curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
 
     scrollCamera.position.copy(pathTarget)
-    scrollCamera.lookAt(0, 1, 0)
+    scrollCamera.lookAt(cameraTarget)
 
     // Render
-    renderer.render(scene, camera)
+    renderer.render(scene, scrollCamera)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
+
+//window.scrollTo({ top: 0, behavior: 'smooth' });
+
 
 tick()
