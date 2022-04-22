@@ -1,9 +1,8 @@
 import './style.css'
 import * as THREE from 'three'
 import gsap from 'gsap'
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+//import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-
 
 
 // assign canvas dom element to variable
@@ -39,7 +38,7 @@ const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
 
 // load street model and apply materials
 gltfLoader.load(
-    'streetAni.glb',
+    'street.glb',
     function traverseThroughGeometry (gltf) {
         gltf.scene.traverse(
             function applyBakedMaterialToAllChildren (child) {
@@ -75,7 +74,7 @@ const sizes = {
 
 //resizer
 window.addEventListener('resize', () =>
-{
+    {
     // Update sizes
     sizes.width = window.innerWidth/1.5
     sizes.height = window.innerHeight
@@ -90,14 +89,13 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-})
+});
 
 /**
- * Camera
+ * Working Camera
  */
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
-camera.position.x = 20
+camera.position.x = 30
 camera.position.y = 10
 camera.position.z = 10
 camera.lookAt(0,0,0)
@@ -112,7 +110,6 @@ scrollCamera.far = 30
 //scene.add(scrollCamera)
 
 // scrollCamera helper
-
 // const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
 // scene.add(scrollCameraHelper);
 
@@ -121,9 +118,9 @@ scrollCamera.far = 30
 const curve = new THREE.CatmullRomCurve3( [
 	new THREE.Vector3( -15, 10, 15 ),
     new THREE.Vector3( -10, 5, -10 ),
-	new THREE.Vector3( 2, 2, -10 ),
-	new THREE.Vector3( 2.5, 1.5, -4 ),
-	new THREE.Vector3( 2.5, 5, 20 )],
+	new THREE.Vector3( 2, 1, -10 ),
+	new THREE.Vector3( 2, 1, -4 ),
+	new THREE.Vector3( 2.5, 5, 13 )],
     false,
 )
 
@@ -140,7 +137,7 @@ const points = curve.getPoints( 10 );
 //var speed = 0.1
 
 var pathTarget = new THREE.Vector3(0,0,0)
-var cameraTarget = new THREE.Vector3(-2,2,2)
+var cameraTarget = new THREE.Vector3(-2,1,2)
 
 /**
  * Renderer
@@ -196,39 +193,50 @@ var animationScripts = [];
 //put camera on path
 curve.getPoint(0, pathTarget);
 
+var pathPercent;
+
 // add an animation that moves the camera between 0-100 percent of scroll
 animationScripts.push({
-start: 0,
-end: 100,
-func: () => {
-    var pathPercent = lerp(0, 1, scalePercent(0, 100));
-    //console.log(pathPercent);
-    curve.getPoint(pathPercent, pathTarget);
-    //cameraTarget.x = lerp(0, -4, scalePercent(0, 100));
-    console.log(cameraTarget);
+    start: 0,
+    end: 100,
+    func: () => {
+        pathPercent = lerp(0, 1, scalePercent(0, 100));
+        curve.getPoint(pathPercent, pathTarget);
+        //cameraTarget.x = lerp(0, -4, scalePercent(0, 100));
+    },
+});
 
-    //console.log(camera.position.x + " " + camera.position.y)
-},
+
+function playScrollAnimations() {
+animationScripts.forEach((a) => {
+    if (scrollPercent >= a.start && scrollPercent < a.end) {
+        a.func()
+    }
 })
+}
 
-  function playScrollAnimations() {
-    animationScripts.forEach((a) => {
-        if (scrollPercent >= a.start && scrollPercent < a.end) {
-            a.func()
-        }
-    })
-  }
+// Scroll event listener
+document.getElementsByTagName('body')[0].onscroll = function() { 
+var h = document.documentElement, 
+b = document.body,
+st = 'scrollTop',
+sh = 'scrollHeight';
+
+scrollPercent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
+document.getElementById('scrollProgress').innerHTML = scrollPercent.toFixed(0);
+};
 
 
-  document.getElementsByTagName('body')[0].onscroll = function() { 
-    var h = document.documentElement, 
-    b = document.body,
-    st = 'scrollTop',
-    sh = 'scrollHeight';
-    
-    scrollPercent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-    document.getElementById('scrollProgress').innerHTML = scrollPercent;
-  };
+// scroll to function
+function scrollToPosition() {
+    scrollPercent = 69;
+}
+
+//assign button to varible
+const exploreButton = document.getElementById("explore");
+
+//add event listender to variable
+exploreButton.addEventListener("click", scrollToPosition)
 
 
 /**
@@ -236,8 +244,6 @@ func: () => {
  */
 const clock = new THREE.Clock()
 let previousTime = 0
-
- //gsap.to(mesh.position, { duration: 1, delay: 1, x: 2 })
 
 const tick = () =>
 {
