@@ -1,6 +1,8 @@
 import './style.css'
 import * as THREE from 'three'
-import gsap from 'gsap'
+import { gsap } from 'gsap';
+import { ScrollTrigger } from "gsap/ScrollTrigger.js"
+gsap.registerPlugin(ScrollTrigger);
 //import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
@@ -237,6 +239,22 @@ const exploreButton = document.getElementById("explore");
 
 //add event listender to variable
 exploreButton.addEventListener("click", scrollToPosition)
+
+
+
+gsap.to("#explore" ,{
+    scrollTrigger: {
+        trigger: "#explore",
+        start: "center 70%",
+        end: "center 20%",
+        scrub: 1,
+        markers: true,
+        toggleActions: "restart pause reverse reset"
+    },
+    x: 400,
+    rotation: 360,
+    duration: 3
+});
 
 
 /**
