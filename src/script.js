@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { gsap } from 'gsap';
 import { ScrollTrigger } from "gsap/ScrollTrigger.js"
 gsap.registerPlugin(ScrollTrigger);
-//import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 
@@ -69,7 +69,7 @@ gltfLoader.load(
 
 //inital canvas sizes
 const sizes = {
-    width: window.innerWidth/1.5,
+    width: window.innerWidth,
     height: window.innerHeight
 }
 
@@ -78,7 +78,7 @@ const sizes = {
 window.addEventListener('resize', () =>
     {
     // Update sizes
-    sizes.width = window.innerWidth/1.5
+    sizes.width = window.innerWidth
     sizes.height = window.innerHeight
 
     // Update cameras
@@ -93,27 +93,23 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 });
 
-/**
- * Working Camera
- */
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
-camera.position.x = 30
-camera.position.y = 10
-camera.position.z = 10
-camera.lookAt(0,0,0)
-scene.add(camera)
 
-/**
- * scrollCamera
- */
+// Renderer
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true
+})
+renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+
+// scrollCamera moving on path
 const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
 scrollCamera.near = 1
 scrollCamera.far = 30
 //scene.add(scrollCamera)
 
-// scrollCamera helper
-// const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
-// scene.add(scrollCameraHelper);
 
 // create path
 
@@ -128,133 +124,73 @@ const curve = new THREE.CatmullRomCurve3( [
 
 const points = curve.getPoints( 10 );
 
+// Path Target object, scrollCamera will be attached to it later
+var pathTarget = new THREE.Vector3(0,0,0)
 
-// make path visible
+
+// camera
+const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height);
+camera.position.set(20,10,20);
+
+// // make path visible
 // const geometry = new THREE.BufferGeometry().setFromPoints( points );
 // const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 // const curveObject = new THREE.Line( geometry, splineMaterial );
 // scene.add(curveObject)
 
+// // scrollCamera helper
+// const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
+// scene.add(scrollCameraHelper);
 
-//var speed = 0.1
-
-var pathTarget = new THREE.Vector3(0,0,0)
-var cameraTarget = new THREE.Vector3(-2,1,2)
-
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
-})
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-renderer.outputEncoding = THREE.sRGBEncoding;
-
-
-/**
- * Orbit Controls
- */
-
+// // Orbit Controls
 // const controls = new OrbitControls( camera, renderer.domElement );
 
+// Camera Target
+var scrollCameraTarget = new THREE.Vector3(-2,1,2)
 
-
-
-
-//scroll progress
-
-let scrollPercent;
-
-//  Liner Interpolation
-//  lerp(min, max, ratio)
-//  eg,
-//  lerp(20, 60, .5)) = 40
-//  lerp(-20, 60, .5)) = 20
-//  lerp(20, 60, .75)) = 50
-//  lerp(-20, -10, .1)) = -.19
-//  
-function lerp(x, y, a) {
-    return (1 - a) * x + a * y;
-}
-
-//  Used to fit the lerps to start and end at specific scrolling percentages
-function scalePercent(start, end) {
-return (scrollPercent - start) / (end - start);
-}
-
-var animationScripts = [];
-
-
-//var cameraPositionOnPathStart = curve.getPoint(0, pathTarget);
-//var cameraPositionOnPathEnd = curve.getPoint(1, pathTarget);
-
-//console.log(cameraPositionOnPathEnd);
-
-//put camera on path
-curve.getPoint(0, pathTarget);
-
-var pathPercent;
-
-// add an animation that moves the camera between 0-100 percent of scroll
-animationScripts.push({
-    start: 0,
-    end: 100,
-    func: () => {
-        pathPercent = lerp(0, 1, scalePercent(0, 100));
-        curve.getPoint(pathPercent, pathTarget);
-        //cameraTarget.x = lerp(0, -4, scalePercent(0, 100));
-    },
-});
-
-
-function playScrollAnimations() {
-animationScripts.forEach((a) => {
-    if (scrollPercent >= a.start && scrollPercent < a.end) {
-        a.func()
-    }
-})
-}
-
-// Scroll event listener
-document.getElementsByTagName('body')[0].onscroll = function() { 
-var h = document.documentElement, 
-b = document.body,
-st = 'scrollTop',
-sh = 'scrollHeight';
-
-scrollPercent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-document.getElementById('scrollProgress').innerHTML = scrollPercent.toFixed(0);
-};
-
-
-// scroll to function
-function scrollToPosition() {
-    scrollPercent = 69;
-}
 
 //assign button to varible
 const exploreButton = document.getElementById("explore");
 
 //add event listender to variable
-exploreButton.addEventListener("click", scrollToPosition)
+exploreButton.addEventListener("click", null)
 
 
 
-gsap.to("#explore" ,{
+// Scroll Animation
+var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
+
+gsap.to(pathPercent, {
     scrollTrigger: {
-        trigger: "#explore",
-        start: "center 70%",
-        end: "center 20%",
-        scrub: 1,
-        markers: true,
+        trigger: "body",
+        endTrigger: "footer",
+        id: "section1",
+        start: "top 0%",
+        end: "bottom 100%",
+        scrub: 0.5,
+        markers: false,
         toggleActions: "restart pause reverse reset"
     },
-    x: 400,
-    rotation: 360,
-    duration: 3
-});
+    value: 1
+}
+);
+
+
+// Animate Explorer Button
+
+// gsap.to("#explore" ,{
+//     scrollTrigger: {
+//         trigger: "#explore",
+//         start: "center 70%",
+//         end: "center 20%",
+//         scrub: 1,
+//         markers: true,
+//         toggleActions: "restart pause reverse reset"
+//     },
+//     x: 400,
+//     rotation: 360,
+//     duration: 3
+// });
 
 
 /**
@@ -269,11 +205,13 @@ const tick = () =>
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
     
-    playScrollAnimations();
+    //playScrollAnimations();
     //curve.getPoint((clock.getElapsedTime() * speed) % 1.0, pathTarget)
 
-    scrollCamera.position.copy(pathTarget)
-    scrollCamera.lookAt(cameraTarget)
+    curve.getPoint(pathPercent.value, pathTarget); // update pathTarget position on path
+
+    scrollCamera.position.copy(pathTarget) // copy scrollCamera position to pathTarget
+    scrollCamera.lookAt(scrollCameraTarget)
 
     // Render
     renderer.render(scene, scrollCamera)
@@ -281,8 +219,5 @@ const tick = () =>
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
-
-//window.scrollTo({ top: 0, behavior: 'smooth' });
-
 
 tick()
