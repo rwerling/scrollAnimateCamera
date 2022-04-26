@@ -180,7 +180,7 @@ gsap.to(pathPercent, {
         start: "bottom 50%",
         end: "bottom 100%",
         scrub: 1,
-        markers: true,
+        markers: false,
         // pin: true,
         toggleActions: "restart pause reverse reset"
     },
