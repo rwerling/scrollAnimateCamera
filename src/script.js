@@ -13,11 +13,6 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-//create cube geometry
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
-// create red material
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-
 // Loaders
 
 // Texture loader
@@ -69,8 +64,8 @@ gltfLoader.load(
 
 //inital canvas sizes
 const sizes = {
-    width: document.body.clientWidth,
-    height: window.innerHeight
+    width: window.innerWidth,
+    height: window.innerHeight/1.5
 }
 
 // const sizes = {
@@ -82,8 +77,8 @@ const sizes = {
 window.addEventListener('resize', () =>
     {
     // Update sizes
-    sizes.width = document.body.clientWidth
-    sizes.height = window.innerHeight
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight/1.5
 
     // Update cameras
     camera.aspect = sizes.width / sizes.height
@@ -106,10 +101,11 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.setClearColor( 0xffffff, 0)
 
 
 // scrollCamera moving on path
-const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
+const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
 scrollCamera.near = 1
 scrollCamera.far = 30
 //scene.add(scrollCamera)
@@ -164,7 +160,7 @@ camera.position.set(20,10,20);
 // const controls = new OrbitControls( camera, renderer.domElement );
 
 // Camera Target
-var scrollCameraTarget = new THREE.Vector3(-2,1,2)
+var scrollCameraTarget = new THREE.Vector3(-2,0.8,2)
 
 
 // //assign button to varible
@@ -180,16 +176,16 @@ var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
 
 gsap.to(pathPercent, {
     scrollTrigger: {
-        trigger: ".headline-container",
+        trigger: ".page-container",
         endTrigger: ".section1-container",
-        start: "bottom 50%",
-        end: "top 100%",
+        start: "top 0%",
+        end: "top 80%",
         scrub: 1,
         markers: false,
-        // pin: true,
+        pin: true,
         toggleActions: "restart pause reverse reset"
     },
-    value: 0.7
+    value: 0.4040
 }
 );
 
