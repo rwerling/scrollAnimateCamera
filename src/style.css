@@ -13,8 +13,8 @@ body {
 
 }
 
-.canvas-container {
-}
+/* .canvas-container {
+} */
 
 .webgl {
 }
@@ -24,8 +24,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
+  max-width: 100%;
   background-color: cadetblue;
 }
 
@@ -41,9 +42,10 @@ font-size: 1.2em;
   display: flex;
   /* align-items: center; */
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
-  background-color: rgb(70, 59, 77);
+  max-width: 100%;
+  background-color: rgb(119, 175, 136);
 }
 
 .column-container {

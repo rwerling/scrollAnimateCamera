@@ -69,15 +69,20 @@ gltfLoader.load(
 
 //inital canvas sizes
 const sizes = {
-    width: window.innerWidth,
+    width: document.body.clientWidth,
     height: window.innerHeight
 }
+
+// const sizes = {
+//     width: 1000,
+//     height: 600
+// }
 
 //resizer
 window.addEventListener('resize', () =>
     {
     // Update sizes
-    sizes.width = window.innerWidth
+    sizes.width = document.body.clientWidth
     sizes.height = window.innerHeight
 
     // Update cameras
@@ -176,9 +181,9 @@ var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
 gsap.to(pathPercent, {
     scrollTrigger: {
         trigger: ".headline-container",
-        endTrigger: ".canvas-container",
+        endTrigger: ".section1-container",
         start: "bottom 50%",
-        end: "bottom 100%",
+        end: "top 100%",
         scrub: 1,
         markers: false,
         // pin: true,
