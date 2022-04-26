@@ -105,7 +105,7 @@ renderer.setClearColor( 0xffffff, 0)
 
 
 // scrollCamera moving on path
-const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
+const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
 scrollCamera.near = 1
 scrollCamera.far = 30
 //scene.add(scrollCamera)
@@ -113,37 +113,51 @@ scrollCamera.far = 30
 
 // create path
 
+// const curve = new THREE.CatmullRomCurve3( [
+// 	new THREE.Vector3( -15, 10, 15 ),
+//     new THREE.Vector3( -10, 5, -10 ),
+// 	new THREE.Vector3( 2, 1, -10 ),
+// 	new THREE.Vector3( 2, 1, -4 ),
+// 	new THREE.Vector3( 2.5, 5, 13 )],
+//     false,
+// )
+
+
 const curve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( -15, 10, 15 ),
-    new THREE.Vector3( -10, 5, -10 ),
-	new THREE.Vector3( 2, 1, -10 ),
-	new THREE.Vector3( 2, 1, -4 ),
-	new THREE.Vector3( 2.5, 5, 13 )],
+	new THREE.Vector3( 0, 25, 0 ),
+    new THREE.Vector3( 0, 2, 12 )],
     false,
 )
 
 const points = curve.getPoints( 10 );
 
+// Camera Target
+var scrollCameraTarget = new THREE.Vector3( 0, 1.5, -1 )
+
 // Path Target object, scrollCamera will be attached to it later
 var pathTarget = new THREE.Vector3(0,0,0)
 
 
+
+
 // create path2
 
-const curve2 = new THREE.CatmullRomCurve3( [
-    new THREE.Vector3(0, 1, -4),
-    new THREE.Vector3(0, 1, 4)],
-    false,
-)
+// const curve2 = new THREE.CatmullRomCurve3( [
+//     new THREE.Vector3(0, 1, -4),
+//     new THREE.Vector3(0, 1, 4)],
+//     false,
+// )
 
-const points2 = curve2.getPoints(2);
+// const points2 = curve2.getPoints(2);
 
 // Path Target2 object, scrollCamera will be attached to it later
-var pathTarget2 = new THREE.Vector3(0,0,0)
+// var pathTarget2 = new THREE.Vector3(0,0,0)
 
+
+let cameraFov = 35;
 
 // camera
-const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height);
+const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
 camera.position.set(20,10,20);
 
 // make path visible
@@ -158,9 +172,6 @@ camera.position.set(20,10,20);
 
 // // Orbit Controls
 // const controls = new OrbitControls( camera, renderer.domElement );
-
-// Camera Target
-var scrollCameraTarget = new THREE.Vector3(-2,0.8,2)
 
 
 // //assign button to varible
@@ -185,9 +196,10 @@ gsap.to(pathPercent, {
         pin: true,
         toggleActions: "restart pause reverse reset"
     },
-    value: 0.4040
-}
+    value: 1 }
 );
+
+console.log(scrollCamera);
 
 
 // Animate Panel
