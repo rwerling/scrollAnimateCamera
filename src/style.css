@@ -2,22 +2,10 @@ html,
 body {
   margin: 0;
   height: 100%;
-  width: 50%;
-  background-color: rgb(0, 0, 0);
-}
+  background-color: rgb(99, 99, 99);
+  overscroll-behavior: none;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 
-  
-.webgl {
-  position: fixed;
-  top: -120;
-  right: 0;
-  display: block;  
-
-  /*
-    Set the container's background color to the same as the scene's
-    background to prevent flashing on load
-  */
-  background-color: black;
 }
   
 .container {
@@ -25,13 +13,30 @@ body {
   top: left;
   left: 0;
   width: 100%;
+}
+
+.webgl {
+  left: 0;
+  background-color: rgb(255, 0, 149);
+}
+
+.headline-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
+  background-color: rgb(137, 184, 10);
+  opacity: 1;
+}
+
+h1 {
+  display: flex;
+  font-size: 60pt;
+  color: rgb(0, 0, 0);
 }
 
 .title-container {
-  position: absolute;
-  width: 40%;
-  height: auto;
+  background-color: rgb(29, 103, 151);
   left: 0;
 } 
 
@@ -41,40 +46,22 @@ body {
   
 }
 
-.title h1 {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: 5rem;
-
-}
-
 section {
-  margin-right: 40px;
-}
-
-section h2 {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-
-.title p {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  width: 50%;
+  text-align: center;
+  /* display: flex; */
 }
 
 #explore {
   cursor: pointer;
   padding: 0.5rem 1rem;
-  margin-top: 2rem;
   border: none;
   border-radius: 5rem;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-weight: 500;
   background-color: turquoise;
   text-transform: uppercase;
 }
 
 footer {
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
   color: rgb(97, 110, 64);
 }

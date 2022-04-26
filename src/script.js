@@ -73,7 +73,6 @@ const sizes = {
     height: window.innerHeight
 }
 
-
 //resizer
 window.addEventListener('resize', () =>
     {
@@ -128,15 +127,29 @@ const points = curve.getPoints( 10 );
 var pathTarget = new THREE.Vector3(0,0,0)
 
 
+// create path2
+
+const curve2 = new THREE.CatmullRomCurve3( [
+    new THREE.Vector3(0, 1, -4),
+    new THREE.Vector3(0, 1, 4)],
+    false,
+)
+
+const points2 = curve2.getPoints(2);
+
+// Path Target2 object, scrollCamera will be attached to it later
+var pathTarget2 = new THREE.Vector3(0,0,0)
+
+
 // camera
 const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height);
 camera.position.set(20,10,20);
 
-// // make path visible
-// const geometry = new THREE.BufferGeometry().setFromPoints( points );
-// const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-// const curveObject = new THREE.Line( geometry, splineMaterial );
-// scene.add(curveObject)
+// make path visible
+const geometry = new THREE.BufferGeometry().setFromPoints( points2 );
+const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+const curveObject = new THREE.Line( geometry, splineMaterial );
+scene.add(curveObject)
 
 // // scrollCamera helper
 // const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
@@ -162,13 +175,13 @@ var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
 
 gsap.to(pathPercent, {
     scrollTrigger: {
-        trigger: "body",
-        endTrigger: "footer",
-        id: "section1",
-        start: "top 0%",
-        end: "bottom 100%",
-        scrub: 0.5,
-        markers: false,
+        trigger: ".headline-container",
+        endTrigger: ".title-container",
+        start: "bottom 60%",
+        end: "top 50%",
+        scrub: 1,
+        markers: true,
+        // pin: true,
         toggleActions: "restart pause reverse reset"
     },
     value: 1
@@ -176,20 +189,18 @@ gsap.to(pathPercent, {
 );
 
 
-// Animate Explorer Button
+// Animate Panel
 
-// gsap.to("#explore" ,{
+// gsap.to(".overlay" ,{
 //     scrollTrigger: {
-//         trigger: "#explore",
-//         start: "center 70%",
-//         end: "center 20%",
+//         trigger: ".overlay",
+//         start: "top 0%",
+//         end: "bottom 0%",
 //         scrub: 1,
-//         markers: true,
+//         markers: false,
 //         toggleActions: "restart pause reverse reset"
 //     },
-//     x: 400,
-//     rotation: 360,
-//     duration: 3
+//     opacity: 0
 // });
 
 
