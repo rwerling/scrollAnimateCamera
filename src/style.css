@@ -1,67 +1,56 @@
-html,
 body {
   margin: 0;
-  height: 100%;
-  background-color: rgb(99, 99, 99);
   overscroll-behavior: none;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* flex-grow: 1; */
 
 }
-  
-.container {
-  position: absolute;
-  top: left;
-  left: 0;
-  width: 100%;
+
+.canvas-container {
 }
 
 .webgl {
-  left: 0;
-  background-color: rgb(255, 0, 149);
 }
 
 .headline-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
-  background-color: rgb(137, 184, 10);
-  opacity: 1;
+  width: 100vw;
+  background-color: cadetblue;
 }
 
 h1 {
+  font-size: 8em;
+}
+
+.headline-container p {
+font-size: 1.2em;
+}
+
+.section1-container {
   display: flex;
-  font-size: 60pt;
-  color: rgb(0, 0, 0);
+  /* align-items: center; */
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(70, 59, 77);
 }
 
-.title-container {
-  background-color: rgb(29, 103, 151);
-  left: 0;
-} 
-
-.title {
-  color: azure;
-  padding-left: 4rem;
-  
+.column-container {
+  width: 33%;
+  margin: 140px 80px;
 }
 
-section {
-  width: 50%;
-  text-align: center;
-  /* display: flex; */
-}
-
-#explore {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5rem;
-  font-weight: 500;
-  background-color: turquoise;
-  text-transform: uppercase;
-}
-
-footer {
-  color: rgb(97, 110, 64);
+h2 {
+  font-size: 3em;
 }

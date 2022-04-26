@@ -146,10 +146,10 @@ const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height);
 camera.position.set(20,10,20);
 
 // make path visible
-const geometry = new THREE.BufferGeometry().setFromPoints( points2 );
-const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-const curveObject = new THREE.Line( geometry, splineMaterial );
-scene.add(curveObject)
+// const geometry = new THREE.BufferGeometry().setFromPoints( points2 );
+// const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+// const curveObject = new THREE.Line( geometry, splineMaterial );
+// scene.add(curveObject)
 
 // // scrollCamera helper
 // const scrollCameraHelper = new THREE.CameraHelper(scrollCamera);
@@ -162,11 +162,11 @@ scene.add(curveObject)
 var scrollCameraTarget = new THREE.Vector3(-2,1,2)
 
 
-//assign button to varible
-const exploreButton = document.getElementById("explore");
+// //assign button to varible
+// const exploreButton = document.getElementById("explore");
 
-//add event listender to variable
-exploreButton.addEventListener("click", null)
+// //add event listender to variable
+// exploreButton.addEventListener("click", null)
 
 
 
@@ -176,15 +176,15 @@ var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
 gsap.to(pathPercent, {
     scrollTrigger: {
         trigger: ".headline-container",
-        endTrigger: ".title-container",
-        start: "bottom 60%",
-        end: "top 50%",
+        endTrigger: ".canvas-container",
+        start: "bottom 50%",
+        end: "bottom 100%",
         scrub: 1,
         markers: true,
         // pin: true,
         toggleActions: "restart pause reverse reset"
     },
-    value: 1
+    value: 0.7
 }
 );
 
