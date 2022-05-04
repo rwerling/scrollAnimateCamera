@@ -8,7 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 
 // assign canvas dom element to variable
-const canvas = document.querySelector('canvas.webgl')
+
 
 // Scene
 const scene = new THREE.Scene()
@@ -95,13 +95,17 @@ window.addEventListener('resize', () =>
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
     antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setClearColor( 0xffffff, 0)
+
+document.getElementById('canvas1-container').appendChild( renderer.domElement );
+//document.getElementById('canvas2-container').appendChild( renderer.domElement );
+
+
 
 
 // scrollCamera moving on path
@@ -192,7 +196,7 @@ gsap.to(pathPercent, {
         start: "top 0%",
         end: "top 80%",
         scrub: 1,
-        markers: false,
+        markers: true,
         pin: true,
         toggleActions: "restart pause reverse reset"
     },
