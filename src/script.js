@@ -42,7 +42,6 @@ gltfLoader.load(
         const bulb1Mesh = gltf.scene.children.find(child => child.name === 'bulbs')
         bulb1Mesh.material = bulbMaterial
 
-        // gltf.scene.scale.set(2, 2, 2)
         scene.add( ... gltf.scene.children);
                 
     }
@@ -160,10 +159,8 @@ const tick = () =>
     scrollCamera.position.copy(pathTarget) // copy scrollCamera position to pathTarget
     scrollCamera.lookAt(scrollCameraTarget)
 
-    // Render
     renderer.render(scene, scrollCamera)
 
-    // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
 
