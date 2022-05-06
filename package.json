@@ -6,7 +6,10 @@
         "dev": "webpack serve --config ./bundler/webpack.dev.js",
         "deploy": "gh-pages -d dist"
     },
+    "name":"rwerling.github.io",
     "homepage": "https://rwerling.github.io/scrollAnimateCamera",
+    "version": "0.1.0",
+    "private": true,
     "dependencies": {
         "@babel/core": "^7.16.12",
         "@babel/preset-env": "^7.16.11",
