@@ -1,10 +1,16 @@
 import './style.css'
+import GUI from 'lil-gui'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import particlesVertexShader from './shaders/particles/vertex.glsl'
+import particlesFragmentShader from './shaders/particles/fragment.glsl'
 
 import { gsap } from 'gsap';
 gsap.registerPlugin(ScrollTrigger);
 import { ScrollTrigger } from "gsap/ScrollTrigger.js"
+
+console.log(particlesVertexShader);
+console.log(particlesFragmentShader);
 
 
 // Scene
@@ -17,6 +23,11 @@ const textureLoader = new THREE.TextureLoader()
 
 // GLTF loader
 const gltfLoader = new GLTFLoader()
+
+// debug
+const gui = new GUI({
+    width: 400
+})
 
 // Baked Texture
 const bakedTexture = textureLoader.load('baked.jpg');
@@ -47,6 +58,48 @@ gltfLoader.load(
     }
 )
 
+// particles geometry
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCount = 40;
+const particlesPosition = new Float32Array(particlesCount * 3);
+const scaleArray = new Float32Array(particlesCount)
+
+
+for(let i = 0; i < particlesCount; i++) {
+    particlesPosition[i * 3 + 0] = (Math.random() - 0.5) * 4
+    particlesPosition[i * 3 + 1] = (Math.random() +0.5) * 1.5
+    particlesPosition[i * 3 + 2] = (Math.random() - 0.5) * 10
+
+    scaleArray[i] = Math.random()
+    
+}
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPosition, 3))
+particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1))
+
+
+// particles material
+const particlesMaterial = new THREE.ShaderMaterial({
+    uniforms:
+    {
+        uTime: { value: 0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uSize: { value: 220 }
+    },
+    vertexShader: particlesVertexShader,
+    fragmentShader: particlesFragmentShader,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+})
+
+gui.add(particlesMaterial.uniforms.uSize, 'value').min(0).max(500).step(1).name('particlesSize')
+
+// particles points
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles);
+
+
+
 //inital canvas sizes
 const sizes = {
     width: window.innerWidth,
@@ -70,7 +123,13 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    // Update particles
+    particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
+
 });
+
+let debugBackground = {};
 
 
 // Renderer
@@ -80,7 +139,17 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.setClearColor( 0xffffff, 0)
+
+debugBackground.clearColor = '#00061e';
+renderer.setClearColor( debugBackground.clearColor)
+
+gui.addColor (debugBackground, 'clearColor', )
+gui.onChange(() =>
+{
+    renderer.setClearColor( debugBackground.clearColor)
+})
+
+
 
 document.getElementById('canvas1-container').appendChild( renderer.domElement );
 //document.getElementById('canvas2-container').appendChild( renderer.domElement );
@@ -153,6 +222,9 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    // Update materials
+    particlesMaterial.uniforms.uTime.value = elapsedTime
 
     curve.getPoint(pathPercent.value, pathTarget); // update pathTarget position on path
 
