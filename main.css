@@ -17,8 +17,8 @@ body {
 /* .canvas-container {
 } */
 
-#canvas1 {
-  background-color: rgb(0, 0, 0);
+#canvas1-container {
+  background-color: rgb(0, 255, 42);
   margin-top: 0px;
   max-width: 100%;
 }
@@ -53,7 +53,7 @@ body {
   min-height: 10vh;
   width: 100vw;
   max-width: 100%;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(0, 6, 30);
 }
 
 h1 {
