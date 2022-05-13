@@ -1,15 +1,11 @@
 html,
 body {
-  margin: 0;
-  height: 100%;
-  width: 50%;
-  background-color: rgb(228, 235, 128);
-}
+  margin: 0;}
 
 .page-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* display: flex;
+  flex-direction: column; */
+  /* align-items: center; */
   
   width: 100%;
   height: 4000px;
@@ -17,30 +13,28 @@ body {
   
 .webgl {
   position: fixed;
-  /* display: block; */
   z-index: -1;
-
-  /*
-    Set the container's background color to the same as the scene's
-    background to prevent flashing on load
-  */
-  background-color: rgb(255, 0, 0);
 }
 
 .headline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
   
 .content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 5rem;
-
 }
 
-section {
-
+.section {
+  width: 50vw;
 }
 
 section h2 {
