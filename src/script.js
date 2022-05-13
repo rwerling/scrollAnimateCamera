@@ -9,8 +9,6 @@ import { gsap } from 'gsap';
 gsap.registerPlugin(ScrollTrigger);
 import { ScrollTrigger } from "gsap/ScrollTrigger.js"
 
-console.log(particlesVertexShader);
-console.log(particlesFragmentShader);
 
 
 // Scene
@@ -26,8 +24,11 @@ const gltfLoader = new GLTFLoader()
 
 // debug
 const gui = new GUI({
+    autoPlace: false,
     width: 400
-})
+});
+
+gui.domElement.id = 'gui';
 
 // Baked Texture
 const bakedTexture = textureLoader.load('baked.jpg');
@@ -103,7 +104,7 @@ scene.add(particles);
 //inital canvas sizes
 const sizes = {
     width: window.innerWidth,
-    height: window.innerHeight/1.5
+    height: window.innerHeight
 }
 
 //resizer
@@ -111,7 +112,7 @@ window.addEventListener('resize', () =>
     {
     // Update sizes
     sizes.width = window.innerWidth
-    sizes.height = window.innerHeight/1.5
+    sizes.height = window.innerHeight
 
     // Update cameras
     camera.aspect = sizes.width / sizes.height
@@ -140,8 +141,15 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-debugBackground.clearColor = '#00061e';
+// debugBackground.clearColor = '#00061e';
+debugBackground.clearColor = '#42f5b6';
+
 renderer.setClearColor( debugBackground.clearColor)
+
+// let viewport = new THREE.Vector4();
+// renderer.getViewport(viewport);
+// console.log(viewport);
+
 
 gui.addColor (debugBackground, 'clearColor', )
 gui.onChange(() =>
@@ -151,7 +159,7 @@ gui.onChange(() =>
 
 
 
-document.getElementById('canvas1-container').appendChild( renderer.domElement );
+document.getElementById('canvas-container').appendChild( renderer.domElement );
 //document.getElementById('canvas2-container').appendChild( renderer.domElement );
 
 
@@ -205,8 +213,7 @@ gsap.to(pathPercent, {
         start: "top 0%",
         end: "top 80%",
         scrub: 1,
-        markers: false,
-        pin: true,
+        markers: true,
         toggleActions: "restart pause reverse reset"
     },
     value: 1 }
@@ -232,6 +239,7 @@ const tick = () =>
     scrollCamera.lookAt(scrollCameraTarget)
 
     renderer.render(scene, scrollCamera)
+    //renderer.setViewport()
 
     window.requestAnimationFrame(tick)
 }
