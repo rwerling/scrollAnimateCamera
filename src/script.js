@@ -9,6 +9,8 @@ import { gsap } from 'gsap';
 gsap.registerPlugin(ScrollTrigger);
 import { ScrollTrigger } from "gsap/ScrollTrigger.js"
 
+// assign canvas dom element to variable
+const canvas = document.querySelector('canvas.webgl')
 
 
 // Scene
@@ -135,6 +137,7 @@ let debugBackground = {};
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
     antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
@@ -159,7 +162,7 @@ gui.onChange(() =>
 
 
 
-document.getElementById('canvas-container').appendChild( renderer.domElement );
+//document.getElementById('canvas-container').appendChild( renderer.domElement );
 //document.getElementById('canvas2-container').appendChild( renderer.domElement );
 
 
@@ -208,10 +211,10 @@ var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
 
 gsap.to(pathPercent, {
     scrollTrigger: {
-        trigger: ".page-container",
-        endTrigger: ".section1-container",
-        start: "top 0%",
-        end: "top 80%",
+        // trigger: ".page-container",
+        // endTrigger: "footer",
+        start: "0",
+        end: "4000",
         scrub: 1,
         markers: true,
         toggleActions: "restart pause reverse reset"
