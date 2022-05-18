@@ -117,8 +117,8 @@ window.addEventListener('resize', () =>
     sizes.height = window.innerHeight
 
     // Update cameras
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+    // camera.aspect = sizes.width / sizes.height
+    // camera.updateProjectionMatrix()
 
     scrollCamera.aspect = sizes.width / sizes.height
     scrollCamera.updateProjectionMatrix()
@@ -145,7 +145,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 // debugBackground.clearColor = '#00061e';
-debugBackground.clearColor = '#42f5b6';
+debugBackground.clearColor = '#00000';
 
 renderer.setClearColor( debugBackground.clearColor)
 
@@ -173,29 +173,41 @@ scrollCamera.far = 30
 //scene.add(scrollCamera)
 
 
-// camera path
+// camera dive path
+// const curve = new THREE.CatmullRomCurve3( [
+// 	new THREE.Vector3( 0, 25, 0 ),
+//     new THREE.Vector3( 0, 2, 12 )],
+//     false,
+// )
+
 const curve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( 0, 25, 0 ),
-    new THREE.Vector3( 0, 2, 12 )],
+	new THREE.Vector3( 10, 15, 20 ),
+    new THREE.Vector3( 10, 5, 0 ),
+    new THREE.Vector3( 5, 5, -5 ),
+    new THREE.Vector3( -5, 5, -15 )
+
+
+],
+    
     false,
 )
 
 const points = curve.getPoints( 10 );
 
 // Camera Target
-var scrollCameraTarget = new THREE.Vector3( 0, 1.5, -1 )
+var scrollCameraTarget = new THREE.Vector3( -5, -1.5, 0 )
 
 // Path Target object, scrollCamera will be attached to it later
 var pathTarget = new THREE.Vector3(0,0,0)
 
 
 // camera
-let cameraFov = 35;
-const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
-camera.position.set(20,10,20);
+// let cameraFov = 35;
+// const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
+// camera.position.set(20,10,20);
 
-// make path visible
-// const geometry = new THREE.BufferGeometry().setFromPoints( points2 );
+// // make path visible
+// const geometry = new THREE.BufferGeometry().setFromPoints( points );
 // const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 // const curveObject = new THREE.Line( geometry, splineMaterial );
 // scene.add(curveObject)
