@@ -167,11 +167,23 @@ gui.onChange(() =>
 
 
 // scrollCamera moving on path
-const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
-scrollCamera.near = 1
-scrollCamera.far = 30
+// const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
+// scrollCamera.near = 1
+// scrollCamera.far = 30
 //scene.add(scrollCamera)
 
+const aspectRatio = window.innerWidth / window.innerHeight;
+const cameraWidth = 150;
+const cameraHeight = cameraWidth / aspectRatio;
+
+const scrollCamera = new THREE.OrthographicCamera(
+    cameraWidth / -10, // left
+    cameraWidth / 10, // right
+    cameraHeight / 10, // top
+    cameraHeight / -10, // bottom
+    0, // near plane
+    1000 // far plane
+  );
 
 // camera dive path
 // const curve = new THREE.CatmullRomCurve3( [
