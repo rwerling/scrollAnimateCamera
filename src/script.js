@@ -145,7 +145,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 // debugBackground.clearColor = '#00061e';
-debugBackground.clearColor = '#00000';
+debugBackground.clearColor = '#000000';
 
 renderer.setClearColor( debugBackground.clearColor)
 
@@ -167,9 +167,15 @@ gui.onChange(() =>
 
 
 // scrollCamera moving on path
+<<<<<<< HEAD
 // const scrollCamera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height)
 // scrollCamera.near = 1
 // scrollCamera.far = 30
+=======
+const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
+scrollCamera.near = 1
+scrollCamera.far = 30
+>>>>>>> 99cad57e906a7e7c1503c44cc7490b6b0b92213e
 //scene.add(scrollCamera)
 
 const aspectRatio = window.innerWidth / window.innerHeight;
@@ -188,29 +194,49 @@ const scrollCamera = new THREE.OrthographicCamera(
 // camera dive path
 // const curve = new THREE.CatmullRomCurve3( [
 // 	new THREE.Vector3( 0, 25, 0 ),
-//     new THREE.Vector3( 0, 2, 12 )],
+//  new THREE.Vector3( 0, 2, 12 )],
 //     false,
 // )
 
-const curve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( 10, 15, 20 ),
-    new THREE.Vector3( 10, 5, 0 ),
-    new THREE.Vector3( 5, 5, -5 ),
-    new THREE.Vector3( -5, 5, -15 )
+// const curve = new THREE.CatmullRomCurve3( [
+// 	new THREE.Vector3( 10, 15, 20 ),
+//     new THREE.Vector3( 10, 5, 0 ),
+//     new THREE.Vector3( 5, 5, -5 ),
+//     new THREE.Vector3( -5, 5, -15 )],
+//     false,
+// )
 
-
-],
+const cameraCurve = new THREE.CatmullRomCurve3( [
+	new THREE.Vector3( -18.168121337890625, 6.210661888122559, -1.5272449254989624 ),
+    new THREE.Vector3( -8.440740585327148, 3.891592502593994, 10.972755432128906 ),
+    new THREE.Vector3( 1.2866392135620117, 1.5725231170654297, -1.527244210243225 ),
+    new THREE.Vector3( -8.440740585327148, 3.891592502593994, -14.027244567871094 )
     
+    ],
+    true,
+)
+
+
+
+// Camera Target
+var scrollCameraTarget = new THREE.Vector3( 0, 1, 0 )
+
+// Path Target object, scrollCamera will be attached to it later
+var cameraPathTarget = new THREE.Vector3(0,0,0)
+
+const targetCurve = new THREE.CatmullRomCurve3( [
+	new THREE.Vector3( -2.5, 1, -0.46 ),
+    new THREE.Vector3( -2.5, 1, -0.46 ),
+    new THREE.Vector3( -2.5, 1, -0.46 )
+    
+    ],
     false,
 )
 
-const points = curve.getPoints( 10 );
+//const points2 = targetCurve.getPoints( 10 );
 
-// Camera Target
-var scrollCameraTarget = new THREE.Vector3( -5, -1.5, 0 )
-
-// Path Target object, scrollCamera will be attached to it later
-var pathTarget = new THREE.Vector3(0,0,0)
+// Path Target object, scrollCameraTarget will be attached to it later
+var targetPathTarget = new THREE.Vector3(0,0,0)
 
 
 // camera
@@ -218,7 +244,9 @@ var pathTarget = new THREE.Vector3(0,0,0)
 // const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
 // camera.position.set(20,10,20);
 
-// // make path visible
+// make path visible
+// const points = cameraCurve.getPoints( 10 );
+
 // const geometry = new THREE.BufferGeometry().setFromPoints( points );
 // const splineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 // const curveObject = new THREE.Line( geometry, splineMaterial );
@@ -231,9 +259,9 @@ var pathTarget = new THREE.Vector3(0,0,0)
 
 
 // Scroll Animation
-var pathPercent = {value: 0 }; // position on path 0=Start, 1=end
+var cameraAndTargetPathTarget = {value: 0 }; // position on path 0=Start, 1=end
 
-gsap.to(pathPercent, {
+gsap.to(cameraAndTargetPathTarget, {
     scrollTrigger: {
         // trigger: ".page-container",
         // endTrigger: "footer",
@@ -260,9 +288,10 @@ const tick = () =>
     // Update materials
     particlesMaterial.uniforms.uTime.value = elapsedTime
 
-    curve.getPoint(pathPercent.value, pathTarget); // update pathTarget position on path
+    cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
+    targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
 
-    scrollCamera.position.copy(pathTarget) // copy scrollCamera position to pathTarget
+    scrollCamera.position.copy(cameraPathTarget) // copy scrollCamera position to cameraPathTarget
     scrollCamera.lookAt(scrollCameraTarget)
 
     renderer.render(scene, scrollCamera)
