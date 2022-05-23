@@ -198,7 +198,6 @@ const cameraCurve = new THREE.CatmullRomCurve3( [
 )
 
 
-
 // Camera Target
 var scrollCameraTarget = new THREE.Vector3( 0, 1, 0 )
 
