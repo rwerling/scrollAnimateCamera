@@ -1,13 +1,15 @@
 html,
 body {
   margin: 0;
+  /* height: 100%;
+  overflow: hidden; */
 }
 
 .page-container {
   position: absolute;
 
   width: 100%;
-  height: 4000px;
+  /* height: 4000px; */
 }
   
 .webgl {
@@ -36,7 +38,7 @@ section h2 {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-#explore {
+#load-button {
   cursor: pointer;
   padding: 0.5rem 1rem;
   margin-top: 2rem;

@@ -2,12 +2,13 @@ import './style.css'
 import GUI from 'lil-gui'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 // import particlesVertexShader from './shaders/particles/vertex.glsl'
 // import particlesFragmentShader from './shaders/particles/fragment.glsl'
 
-import { gsap } from 'gsap';
-gsap.registerPlugin(ScrollTrigger);
-import { ScrollTrigger } from "gsap/ScrollTrigger.js"
+// import { gsap } from 'gsap';
+// gsap.registerPlugin(ScrollTrigger);
+// import { ScrollTrigger } from "gsap/ScrollTrigger.js"
 
 // assign canvas dom element to variable
 const canvas = document.querySelector('canvas.webgl')
@@ -45,21 +46,28 @@ const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
 
 
 // load street model and apply materials
-gltfLoader.load(
-    'street.glb',
-    function traverseThroughGeometry (gltf) {
-        gltf.scene.traverse(
-            function applyBakedMaterialToAllChildren (child) {
-                child.material = bakedMaterial
-            }
-        )
-        const bulb1Mesh = gltf.scene.children.find(child => child.name === 'bulbs')
-        bulb1Mesh.material = bulbMaterial
 
-        scene.add( ... gltf.scene.children);
-                
-    }
-)
+function loadHouses() {
+    gltfLoader.load(
+        'hochhaus.glb',
+        function traverseThroughGeometry (gltf) {
+            // gltf.scene.traverse(
+            //     function applyBakedMaterialToAllChildren (child) {
+            //         child.material = bakedMaterial
+            //     }
+            // )
+            // const bulb1Mesh = gltf.scene.children.find(child => child.name === 'bulbs')
+            // bulb1Mesh.material = bulbMaterial
+            console.log(gltf);
+            scene.add(gltf.scene);
+                    
+        }
+    )
+}
+
+loadHouses();
+
+document.getElementById("load-button").addEventListener("click", loadHouses);
 
 // // particles geometry
 // const particlesGeometry = new THREE.BufferGeometry();
@@ -117,8 +125,8 @@ window.addEventListener('resize', () =>
     sizes.height = window.innerHeight
 
     // Update cameras
-    // camera.aspect = sizes.width / sizes.height
-    // camera.updateProjectionMatrix()
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
 
     scrollCamera.aspect = sizes.width / sizes.height
     scrollCamera.updateProjectionMatrix()
@@ -128,7 +136,7 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     // Update particles
-    particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
+    //particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
 
 });
 
@@ -144,8 +152,8 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-// debugBackground.clearColor = '#00061e';
-debugBackground.clearColor = '#000000';
+debugBackground.clearColor = '#e5eb3b';
+//debugBackground.clearColor = '#000000';
 
 renderer.setClearColor( debugBackground.clearColor)
 
@@ -159,7 +167,6 @@ gui.onChange(() =>
 {
     renderer.setClearColor( debugBackground.clearColor)
 })
-
 
 
 //document.getElementById('canvas-container').appendChild( renderer.domElement );
@@ -220,9 +227,18 @@ var targetPathTarget = new THREE.Vector3(0,0,0)
 
 
 // camera
-// let cameraFov = 35;
-// const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
-// camera.position.set(20,10,20);
+let cameraFov = 35;
+const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
+camera.position.set(30,50,30);
+scene.add(camera);
+
+// orbitcontrols
+const controls = new OrbitControls( camera, renderer.domElement );
+
+
+// axesHelper
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
 
 // make path visible
 // const points = cameraCurve.getPoints( 10 );
@@ -239,20 +255,20 @@ var targetPathTarget = new THREE.Vector3(0,0,0)
 
 
 // Scroll Animation
-var cameraAndTargetPathTarget = {value: 0 }; // position on path 0=Start, 1=end
+// var cameraAndTargetPathTarget = {value: 0 }; // position on path 0=Start, 1=end
 
-gsap.to(cameraAndTargetPathTarget, {
-    scrollTrigger: {
-        // trigger: ".page-container",
-        // endTrigger: "footer",
-        start: "0",
-        end: "4000",
-        scrub: 1,
-        markers: true,
-        toggleActions: "restart pause reverse reset"
-    },
-    value: 1 }
-);
+// gsap.to(cameraAndTargetPathTarget, {
+//     scrollTrigger: {
+//         // trigger: ".page-container",
+//         // endTrigger: "footer",
+//         start: "0",
+//         end: "4000",
+//         scrub: 1,
+//         markers: true,
+//         toggleActions: "restart pause reverse reset"
+//     },
+//     value: 1 }
+// );
 
 
 // Animate
@@ -268,13 +284,16 @@ const tick = () =>
     // Update materials
     // particlesMaterial.uniforms.uTime.value = elapsedTime
 
-    cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
-    targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
+    // cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
+    // targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
 
-    scrollCamera.position.copy(cameraPathTarget) // copy scrollCamera position to cameraPathTarget
-    scrollCamera.lookAt(scrollCameraTarget)
+    // scrollCamera.position.copy(cameraPathTarget) // copy scrollCamera position to cameraPathTarget
+    // scrollCamera.lookAt(scrollCameraTarget)
 
-    renderer.render(scene, scrollCamera)
+    controls.update();
+
+
+    renderer.render(scene, camera)
     //renderer.setViewport()
 
     window.requestAnimationFrame(tick)
