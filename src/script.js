@@ -2,8 +2,8 @@ import './style.css'
 import GUI from 'lil-gui'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import particlesVertexShader from './shaders/particles/vertex.glsl'
-import particlesFragmentShader from './shaders/particles/fragment.glsl'
+// import particlesVertexShader from './shaders/particles/vertex.glsl'
+// import particlesFragmentShader from './shaders/particles/fragment.glsl'
 
 import { gsap } from 'gsap';
 gsap.registerPlugin(ScrollTrigger);
@@ -61,45 +61,45 @@ gltfLoader.load(
     }
 )
 
-// particles geometry
-const particlesGeometry = new THREE.BufferGeometry();
-const particlesCount = 40;
-const particlesPosition = new Float32Array(particlesCount * 3);
-const scaleArray = new Float32Array(particlesCount)
+// // particles geometry
+// const particlesGeometry = new THREE.BufferGeometry();
+// const particlesCount = 40;
+// const particlesPosition = new Float32Array(particlesCount * 3);
+// const scaleArray = new Float32Array(particlesCount)
 
 
-for(let i = 0; i < particlesCount; i++) {
-    particlesPosition[i * 3 + 0] = (Math.random() - 0.5) * 4
-    particlesPosition[i * 3 + 1] = (Math.random() +0.5) * 1.5
-    particlesPosition[i * 3 + 2] = (Math.random() - 0.5) * 10
+// for(let i = 0; i < particlesCount; i++) {
+//     particlesPosition[i * 3 + 0] = (Math.random() - 0.5) * 4
+//     particlesPosition[i * 3 + 1] = (Math.random() +0.5) * 1.5
+//     particlesPosition[i * 3 + 2] = (Math.random() - 0.5) * 10
 
-    scaleArray[i] = Math.random()
+//     scaleArray[i] = Math.random()
     
-}
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPosition, 3))
-particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1))
+// }
+// particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPosition, 3))
+// particlesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1))
 
 
-// particles material
-const particlesMaterial = new THREE.ShaderMaterial({
-    uniforms:
-    {
-        uTime: { value: 0 },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-        uSize: { value: 220 }
-    },
-    vertexShader: particlesVertexShader,
-    fragmentShader: particlesFragmentShader,
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-})
+// // particles material
+// const particlesMaterial = new THREE.ShaderMaterial({
+//     uniforms:
+//     {
+//         uTime: { value: 0 },
+//         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+//         uSize: { value: 220 }
+//     },
+//     vertexShader: particlesVertexShader,
+//     fragmentShader: particlesFragmentShader,
+//     transparent: true,
+//     blending: THREE.AdditiveBlending,
+//     depthWrite: false
+// })
 
-gui.add(particlesMaterial.uniforms.uSize, 'value').min(0).max(500).step(1).name('particlesSize')
+// gui.add(particlesMaterial.uniforms.uSize, 'value').min(0).max(500).step(1).name('particlesSize')
 
-// particles points
-const particles = new THREE.Points(particlesGeometry, particlesMaterial)
-scene.add(particles);
+// // particles points
+// const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+// scene.add(particles);
 
 
 
@@ -266,7 +266,7 @@ const tick = () =>
     previousTime = elapsedTime
 
     // Update materials
-    particlesMaterial.uniforms.uTime.value = elapsedTime
+    // particlesMaterial.uniforms.uTime.value = elapsedTime
 
     cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
     targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
