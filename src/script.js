@@ -42,32 +42,68 @@ bakedTexture.encoding = THREE.sRGBEncoding;
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 
 // Bulb Material
-const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 });
+const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparent: true, opacity: 0.5 });
+
+// standardMaterial
+const workingMaterial = new THREE.MeshNormalMaterial({  });
 
 
-// load street model and apply materials
+// button eventlistener
+document.getElementById("load-button").addEventListener("click", readUserInputAndLoad);
 
-function loadHouses() {
-    gltfLoader.load(
-        'hochhaus.glb',
-        function traverseThroughGeometry (gltf) {
-            // gltf.scene.traverse(
-            //     function applyBakedMaterialToAllChildren (child) {
-            //         child.material = bakedMaterial
-            //     }
-            // )
-            // const bulb1Mesh = gltf.scene.children.find(child => child.name === 'bulbs')
-            // bulb1Mesh.material = bulbMaterial
-            console.log(gltf);
-            scene.add(gltf.scene);
-                    
+
+// function called when file is loaded
+// function onLoad( gltf ) {
+//     const letter = gltf.scene.children[0];
+//     scene.add(letter)
+//     console.log(letter);
+//     //letter.rotation.y = Math.PI / 2;
+//     letter.position.y = 0-16;
+// }
+
+
+function readUserInputAndLoad() {
+    let userInput = document.getElementById("input-field").value;
+    //console.log(userInput.length);
+    for (let i = 0; i < userInput.length; i++) {
+        gltfLoader.load(
+        
+        userInput.charAt(i)+".glb",
+
+        function onLoad( gltf ) {
+            gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
+                child.material = workingMaterial
+                }
+            )
+            //console.log(gltf);
+            const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
+            console.log(windowsGeometry);
+            windowsGeometry.children[0].material = bulbMaterial
+        
+            const letter = gltf.scene;
+            letter.position.y = i * 8;
+            letter.rotation.y = i*(Math.PI / 2);
+            //letter.translateOnAxis( (0, 0, 0), 0 );
+            scene.add(letter)
+            }
+        );
+
+        gltfLoader.load(
+
+        'cube.glb',
+
+        function onLoad( gltf ) {
+            const cube = gltf.scene.children[0];
+            cube.position.y = i * 8;
+            cube.rotation.y = i*(Math.PI / 2)+(Math.PI / 2);
+            //scene.add(cube)
         }
-    )
+        )
+
+    }
+
 }
 
-loadHouses();
-
-document.getElementById("load-button").addEventListener("click", loadHouses);
 
 // // particles geometry
 // const particlesGeometry = new THREE.BufferGeometry();
@@ -108,6 +144,12 @@ document.getElementById("load-button").addEventListener("click", loadHouses);
 // // particles points
 // const particles = new THREE.Points(particlesGeometry, particlesMaterial)
 // scene.add(particles);
+
+// working light
+const workingLight = new THREE.AmbientLight( 0x404040 );
+scene.add( workingLight );
+
+
 
 
 
@@ -152,8 +194,7 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-debugBackground.clearColor = '#e5eb3b';
-//debugBackground.clearColor = '#000000';
+debugBackground.clearColor = '#000000';
 
 renderer.setClearColor( debugBackground.clearColor)
 
@@ -229,7 +270,7 @@ var targetPathTarget = new THREE.Vector3(0,0,0)
 // camera
 let cameraFov = 35;
 const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
-camera.position.set(30,50,30);
+camera.position.set(100,20,30);
 scene.add(camera);
 
 // orbitcontrols
@@ -237,7 +278,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 
 
 // axesHelper
-const axesHelper = new THREE.AxesHelper( 5 );
+const axesHelper = new THREE.AxesHelper( 50 );
 scene.add( axesHelper );
 
 // make path visible
