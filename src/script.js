@@ -41,63 +41,82 @@ bakedTexture.encoding = THREE.sRGBEncoding;
 //Baked Material
 const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture });
 
-// Bulb Material
-const bulbMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparent: true, opacity: 0.5 });
+// Window Material
+const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparent: true, opacity: 0.5 });
 
 // standardMaterial
 const workingMaterial = new THREE.MeshNormalMaterial({  });
+
+
+
+// load base geoemtry
+gltfLoader.load('base.glb',
+    function onLoad( gltf ) {
+        gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
+            child.material = workingMaterial
+        })
+
+        const objectToBeAdded = gltf.scene;
+        scene.add(objectToBeAdded)
+    }
+)
+
+
 
 
 // button eventlistener
 document.getElementById("load-button").addEventListener("click", readUserInputAndLoad);
 
 
-// function called when file is loaded
-// function onLoad( gltf ) {
-//     const letter = gltf.scene.children[0];
-//     scene.add(letter)
-//     console.log(letter);
-//     //letter.rotation.y = Math.PI / 2;
-//     letter.position.y = 0-16;
-// }
 
 
+// read user input and load letters+cube
 function readUserInputAndLoad() {
     let userInput = document.getElementById("input-field").value;
-    //console.log(userInput.length);
     for (let i = 0; i < userInput.length; i++) {
-        gltfLoader.load(
-        
-        userInput.charAt(i)+".glb",
 
-        function onLoad( gltf ) {
-            gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
-                child.material = workingMaterial
+        gltfLoader.load(userInput.charAt(i)+".glb",
+
+            function onLoad( gltf ) {
+                gltf.scene.traverse(function applyWorkingMaterialToAllChildren (child) {
+
+                        child.material = workingMaterial
+                })
+             
+                const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
+
+                console.log(windowsGeometry);
+                
+                if (windowsGeometry !== undefined) {
+                    windowsGeometry.traverse(function applyWindowMaterialToAllChildren (child) {
+                        child.material = windowMaterial
+                    })
                 }
-            )
-            //console.log(gltf);
-            const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
-            console.log(windowsGeometry);
-            windowsGeometry.children[0].material = bulbMaterial
-        
-            const letter = gltf.scene;
-            letter.position.y = i * 8;
-            letter.rotation.y = i*(Math.PI / 2);
-            //letter.translateOnAxis( (0, 0, 0), 0 );
-            scene.add(letter)
+
+                const letter = gltf.scene;
+                letter.position.y = i * 8;
+                letter.rotation.y = i*(Math.PI / 2);
+                scene.add(letter)
             }
-        );
+        )
 
-        gltfLoader.load(
+        gltfLoader.load('cube.glb',
 
-        'cube.glb',
+            function onLoad( gltf ) {
+                gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
+                    child.material = workingMaterial
+                })
+                
+                const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
+                windowsGeometry.traverse(function applyWindowMaterialToAllChildren (child) {
+                    child.material = windowMaterial
+                })
 
-        function onLoad( gltf ) {
-            const cube = gltf.scene.children[0];
-            cube.position.y = i * 8;
-            cube.rotation.y = i*(Math.PI / 2)+(Math.PI / 2);
-            //scene.add(cube)
-        }
+                const cube = gltf.scene;
+                cube.position.y = i * 8;
+                cube.rotation.y = i*(Math.PI / 2);
+                scene.add(cube)
+            }
         )
 
     }
@@ -268,13 +287,14 @@ var targetPathTarget = new THREE.Vector3(0,0,0)
 
 
 // camera
-let cameraFov = 35;
+let cameraFov = 25;
 const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
-camera.position.set(100,20,30);
+camera.position.set(130,40,130);
 scene.add(camera);
 
 // orbitcontrols
 const controls = new OrbitControls( camera, renderer.domElement );
+controls.target.set(0, 30, 0)
 
 
 // axesHelper
