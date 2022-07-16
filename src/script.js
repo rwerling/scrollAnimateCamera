@@ -52,12 +52,12 @@ const workingMaterial = new THREE.MeshNormalMaterial({  });
 // load base geoemtry
 gltfLoader.load('base.glb',
     function onLoad( gltf ) {
-        gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
+        gltf.scene.children[0].traverse(function applyBakedMaterialToAllChildren (child) {
             child.material = workingMaterial
         })
-
-        const objectToBeAdded = gltf.scene;
+        const objectToBeAdded = gltf.scene.children[0];
         scene.add(objectToBeAdded)
+
     }
 )
 
@@ -78,13 +78,15 @@ function readUserInputAndLoad() {
         gltfLoader.load(userInput.charAt(i)+".glb",
 
             function onLoad( gltf ) {
-                gltf.scene.traverse(function applyWorkingMaterialToAllChildren (child) {
+                console.log(gltf.scene.children[0]);
+                gltf.scene.children[0].traverse(function applyWorkingMaterialToAllChildren (child) {
 
                         child.material = workingMaterial
                 })
              
-                const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
-
+                const windowsGeometry = gltf.scene.children.find(child => child.name === 'window')
+                // const windowsGeometry = gltf.scene.children.find(child => child.name.includes('window001'))
+                
                 console.log(windowsGeometry);
                 
                 if (windowsGeometry !== undefined) {
