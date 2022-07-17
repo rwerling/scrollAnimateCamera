@@ -48,76 +48,82 @@ const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparen
 const workingMaterial = new THREE.MeshNormalMaterial({  });
 
 
+// create onLoad() function here
+
+function onLoad( gltf ) {
+
+    //console.log(gltf.scene);
+
+    gltf.scene.children[0].traverse(
+        function applyMaterialsToChildren (child) {
+
+            if (child.name.includes('window')) {
+                child.material = windowMaterial;
+            }
+    
+            else {
+                child.material = workingMaterial;
+            }
+
+        }
+    )
+
+    const object = gltf.scene.children[0];
+    // letter.position.y = i * 8;
+    // letter.rotation.y = i*(Math.PI / 2);
+    scene.add(object)
+}
 
 // load base geoemtry
 gltfLoader.load('base.glb',
-    function onLoad( gltf ) {
-        gltf.scene.children[0].traverse(function applyBakedMaterialToAllChildren (child) {
-            child.material = workingMaterial
-        })
-        const objectToBeAdded = gltf.scene.children[0];
-        scene.add(objectToBeAdded)
-
-    }
+    onLoad
 )
-
-
-
 
 // button eventlistener
 document.getElementById("load-button").addEventListener("click", readUserInputAndLoad);
-
-
 
 
 // read user input and load letters+cube
 function readUserInputAndLoad() {
     let userInput = document.getElementById("input-field").value;
     for (let i = 0; i < userInput.length; i++) {
-
         gltfLoader.load(userInput.charAt(i)+".glb",
-
             function onLoad( gltf ) {
-                console.log(gltf.scene.children[0]);
-                gltf.scene.children[0].traverse(function applyWorkingMaterialToAllChildren (child) {
-
-                        child.material = workingMaterial
-                })
-             
-                const windowsGeometry = gltf.scene.children.find(child => child.name === 'window')
-                // const windowsGeometry = gltf.scene.children.find(child => child.name.includes('window001'))
-                
-                console.log(windowsGeometry);
-                
-                if (windowsGeometry !== undefined) {
-                    windowsGeometry.traverse(function applyWindowMaterialToAllChildren (child) {
-                        child.material = windowMaterial
-                    })
-                }
-
-                const letter = gltf.scene;
-                letter.position.y = i * 8;
-                letter.rotation.y = i*(Math.PI / 2);
-                scene.add(letter)
+                //console.log(gltf.scene);
+                gltf.scene.children[0].traverse(
+                    function applyMaterialsToChildren (child) {
+                        if (child.name.includes('window')) {
+                            child.material = windowMaterial;
+                        }
+                        else {
+                            child.material = workingMaterial;
+                        }
+                    }
+                )
+                const object = gltf.scene.children[0];
+                object.position.y = i * 8;
+                object.rotation.y = i*(Math.PI / 2);
+                scene.add(object)
             }
         )
 
         gltfLoader.load('cube.glb',
-
             function onLoad( gltf ) {
-                gltf.scene.traverse(function applyBakedMaterialToAllChildren (child) {
-                    child.material = workingMaterial
-                })
-                
-                const windowsGeometry = gltf.scene.children.find(child => child.name === 'windows')
-                windowsGeometry.traverse(function applyWindowMaterialToAllChildren (child) {
-                    child.material = windowMaterial
-                })
-
-                const cube = gltf.scene;
-                cube.position.y = i * 8;
-                cube.rotation.y = i*(Math.PI / 2);
-                scene.add(cube)
+                //console.log(gltf.scene);
+                gltf.scene.children[0].traverse(
+                    function applyMaterialsToChildren (child) {
+                        if (child.name.includes('window')) {
+                            child.material = windowMaterial;
+                        }
+                        else {
+                            child.material = workingMaterial;
+                        }
+                    }
+                )
+                const object = gltf.scene.children[0];
+                object.position.y = i * 8;
+                object.rotation.y = i*(Math.PI / 2);
+                scene.add(object)
             }
         )
 
@@ -167,12 +173,8 @@ function readUserInputAndLoad() {
 // scene.add(particles);
 
 // working light
-const workingLight = new THREE.AmbientLight( 0x404040 );
-scene.add( workingLight );
-
-
-
-
+// const workingLight = new THREE.AmbientLight( 0x404040 );
+// scene.add( workingLight );
 
 //inital canvas sizes
 const sizes = {
@@ -188,8 +190,8 @@ window.addEventListener('resize', () =>
     sizes.height = window.innerHeight
 
     // Update cameras
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+    workingCamera.aspect = sizes.width / sizes.height
+    workingCamera.updateProjectionMatrix()
 
     scrollCamera.aspect = sizes.width / sizes.height
     scrollCamera.updateProjectionMatrix()
@@ -199,7 +201,7 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     // Update particles
-    //particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
+    // particlesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
 
 });
 
@@ -288,14 +290,14 @@ const targetCurve = new THREE.CatmullRomCurve3( [
 var targetPathTarget = new THREE.Vector3(0,0,0)
 
 
-// camera
-let cameraFov = 25;
-const camera = new THREE.PerspectiveCamera(cameraFov, sizes.width / sizes.height);
-camera.position.set(130,40,130);
-scene.add(camera);
+// workingCamera
+let workingCameraFov = 25;
+const workingCamera = new THREE.PerspectiveCamera(workingCameraFov, sizes.width / sizes.height);
+workingCamera.position.set(130,40,130);
+scene.add(workingCamera);
 
 // orbitcontrols
-const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new OrbitControls( workingCamera, renderer.domElement );
 controls.target.set(0, 30, 0)
 
 
@@ -356,7 +358,7 @@ const tick = () =>
     controls.update();
 
 
-    renderer.render(scene, camera)
+    renderer.render(scene, workingCamera)
     //renderer.setViewport()
 
     window.requestAnimationFrame(tick)
