@@ -26,8 +26,7 @@ const textureLoader = new THREE.TextureLoader()
 // GLTF loader
 const gltfLoader = new GLTFLoader()
 
-// this utility function allows you to use any three.js
-// loader with promises and async/await
+// this utility function allows you to use any three.js loader with promises and async/await
 function modelLoader(url) {
     return new Promise((resolve, reject) => {
       gltfLoader.load(url, data=> resolve(data), null, reject);
@@ -57,31 +56,33 @@ const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparen
 const workingMaterial = new THREE.MeshNormalMaterial({  });
 
 
-// async loading function
-
-async function loadObject(url) {
+// async loading and position (move up and rotate each letter and cube) function
+async function loadObjectAndPosition(url, i) {
     const gltfData = await modelLoader(url),
 
     model = gltfData.scene.children[0];
-    console.log(model);
+
     scene.add(model);
+
+    if (i !== undefined) {
+        model.position.y = i * 8;
+        model.rotation.y = i*(Math.PI / 2);
+    }
 
     model.traverse(
         function applyMaterialsToChildren (child) {
-
             if (child.name.includes('window')) {
                 child.material = windowMaterial;
             }
-    
             else {
                 child.material = workingMaterial;
             }
-
         }
     )
 }
 
-loadObject('base.glb');
+// load base
+loadObjectAndPosition('base.glb');
 
 
 // button eventlistener
@@ -89,50 +90,12 @@ document.getElementById("load-button").addEventListener("click", readUserInputAn
 document.getElementById("do-button").addEventListener("click", removeItems);
 
 
-// read user input and load letters+cube
+// read user input and load objects (letters+cube)
 function readUserInputAndLoad() {
     let userInput = document.getElementById("input-field").value;
     for (let i = 0; i < userInput.length; i++) {
-        gltfLoader.load(userInput.charAt(i)+".glb",
-            function onLoad( gltf ) {
-                //console.log(gltf.scene);
-                gltf.scene.children[0].traverse(
-                    function applyMaterialsToChildren (child) {
-                        if (child.name.includes('window')) {
-                            child.material = windowMaterial;
-                        }
-                        else {
-                            child.material = workingMaterial;
-                        }
-                    }
-                )
-                const object = gltf.scene.children[0];
-                object.position.y = i * 8;
-                object.rotation.y = i*(Math.PI / 2);
-                scene.add(object)
-            }
-        )
-
-        gltfLoader.load('cube.glb',
-            function onLoad( gltf ) {
-                //console.log(gltf.scene);
-                gltf.scene.children[0].traverse(
-                    function applyMaterialsToChildren (child) {
-                        if (child.name.includes('window')) {
-                            child.material = windowMaterial;
-                        }
-                        else {
-                            child.material = workingMaterial;
-                        }
-                    }
-                )
-                const object = gltf.scene.children[0];
-                object.position.y = i * 8;
-                object.rotation.y = i*(Math.PI / 2);
-                scene.add(object)
-            }
-        )
-
+        loadObjectAndPosition(userInput.charAt(i)+".glb", i)
+        loadObjectAndPosition('cube.glb', i)
     }
 }
 
