@@ -6,9 +6,10 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 // import particlesVertexShader from './shaders/particles/vertex.glsl'
 // import particlesFragmentShader from './shaders/particles/fragment.glsl'
 
-// import { gsap } from 'gsap';
-// gsap.registerPlugin(ScrollTrigger);
-// import { ScrollTrigger } from "gsap/ScrollTrigger.js"
+import { gsap } from 'gsap';
+gsap.registerPlugin(ScrollTrigger);
+import { ScrollTrigger } from "gsap/ScrollTrigger.js"
+import { Object3D } from 'three'
 
 // assign canvas dom element to variable
 const canvas = document.querySelector('canvas.webgl')
@@ -24,6 +25,14 @@ const textureLoader = new THREE.TextureLoader()
 
 // GLTF loader
 const gltfLoader = new GLTFLoader()
+
+// this utility function allows you to use any three.js
+// loader with promises and async/await
+function modelLoader(url) {
+    return new Promise((resolve, reject) => {
+      gltfLoader.load(url, data=> resolve(data), null, reject);
+    });
+  }
 
 // debug
 const gui = new GUI({
@@ -48,13 +57,16 @@ const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x9db2be, transparen
 const workingMaterial = new THREE.MeshNormalMaterial({  });
 
 
-// create onLoad() function here
+// async loading function
 
-function onLoad( gltf ) {
+async function loadObject(url) {
+    const gltfData = await modelLoader(url),
 
-    //console.log(gltf.scene);
+    model = gltfData.scene.children[0];
+    console.log(model);
+    scene.add(model);
 
-    gltf.scene.children[0].traverse(
+    model.traverse(
         function applyMaterialsToChildren (child) {
 
             if (child.name.includes('window')) {
@@ -67,20 +79,14 @@ function onLoad( gltf ) {
 
         }
     )
-
-    const object = gltf.scene.children[0];
-    // letter.position.y = i * 8;
-    // letter.rotation.y = i*(Math.PI / 2);
-    scene.add(object)
 }
 
-// load base geoemtry
-gltfLoader.load('base.glb',
-    onLoad
-)
+loadObject('base.glb');
+
 
 // button eventlistener
 document.getElementById("load-button").addEventListener("click", readUserInputAndLoad);
+document.getElementById("do-button").addEventListener("click", removeItems);
 
 
 // read user input and load letters+cube
@@ -128,8 +134,23 @@ function readUserInputAndLoad() {
         )
 
     }
-
 }
+
+function removeItems() {
+    let elementsToBeRemoved = [];
+    scene.traverse(
+        function selectObjectsToBeRemoved (child) {
+            if (child.name.includes('container') && child.type === "Object3D") {
+                elementsToBeRemoved.push(child);
+            }
+        }
+    )
+
+    for (let i = 0; i < elementsToBeRemoved.length; i++) {
+        scene.remove(elementsToBeRemoved[i]);
+    }
+}
+
 
 
 // // particles geometry
@@ -238,10 +259,10 @@ gui.onChange(() =>
 
 
 // scrollCamera moving on path
-const scrollCamera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height)
+const scrollCamera = new THREE.PerspectiveCamera(55, sizes.width / sizes.height)
 scrollCamera.near = 1
-scrollCamera.far = 30
-//scene.add(scrollCamera)
+scrollCamera.far = 130
+scene.add(scrollCamera)
 
 // camera dive path
 // const curve = new THREE.CatmullRomCurve3( [
@@ -259,10 +280,10 @@ scrollCamera.far = 30
 // )
 
 const cameraCurve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( -18.168121337890625, 6.210661888122559, -1.5272449254989624 ),
-    new THREE.Vector3( -8.440740585327148, 3.891592502593994, 10.972755432128906 ),
-    new THREE.Vector3( 1.2866392135620117, 1.5725231170654297, -1.527244210243225 ),
-    new THREE.Vector3( -8.440740585327148, 3.891592502593994, -14.027244567871094 )
+	new THREE.Vector3( -70, 30, 70 ),
+    new THREE.Vector3( -70, 30, -70 ),
+    new THREE.Vector3( 70, 30, -70 ),
+    new THREE.Vector3( 70, 30, 70 )
     
     ],
     true,
@@ -276,9 +297,9 @@ var scrollCameraTarget = new THREE.Vector3( 0, 1, 0 )
 var cameraPathTarget = new THREE.Vector3(0,0,0)
 
 const targetCurve = new THREE.CatmullRomCurve3( [
-	new THREE.Vector3( -2.5, 1, -0.46 ),
-    new THREE.Vector3( -2.5, 1, -0.46 ),
-    new THREE.Vector3( -2.5, 1, -0.46 )
+	new THREE.Vector3(0, 35, 0 ),
+    new THREE.Vector3(0, 35, 0 ),
+    new THREE.Vector3(0, 35, 0 )
     
     ],
     false,
@@ -301,11 +322,11 @@ const controls = new OrbitControls( workingCamera, renderer.domElement );
 controls.target.set(0, 30, 0)
 
 
-// axesHelper
-const axesHelper = new THREE.AxesHelper( 50 );
-scene.add( axesHelper );
+// // axesHelper
+// const axesHelper = new THREE.AxesHelper( 50 );
+// scene.add( axesHelper );
 
-// make path visible
+// // make path visible
 // const points = cameraCurve.getPoints( 10 );
 
 // const geometry = new THREE.BufferGeometry().setFromPoints( points );
@@ -318,22 +339,21 @@ scene.add( axesHelper );
 // scene.add(scrollCameraHelper);
 
 
-
 // Scroll Animation
-// var cameraAndTargetPathTarget = {value: 0 }; // position on path 0=Start, 1=end
+var cameraAndTargetPathTarget = {value: 0 }; // position on path 0=Start, 1=end
 
-// gsap.to(cameraAndTargetPathTarget, {
-//     scrollTrigger: {
-//         // trigger: ".page-container",
-//         // endTrigger: "footer",
-//         start: "0",
-//         end: "4000",
-//         scrub: 1,
-//         markers: true,
-//         toggleActions: "restart pause reverse reset"
-//     },
-//     value: 1 }
-// );
+gsap.to(cameraAndTargetPathTarget, {
+    scrollTrigger: {
+        // trigger: ".page-container",
+        // endTrigger: "footer",
+        start: "0",
+        end: "2000",
+        scrub: 1,
+        markers: true,
+        toggleActions: "restart pause reverse reset"
+    },
+    value: 1 }
+);
 
 
 // Animate
@@ -349,16 +369,16 @@ const tick = () =>
     // Update materials
     // particlesMaterial.uniforms.uTime.value = elapsedTime
 
-    // cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
-    // targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
+    cameraCurve.getPoint(cameraAndTargetPathTarget.value, cameraPathTarget); // update cameraPathTarget position on path
+    targetCurve.getPoint(cameraAndTargetPathTarget.value, scrollCameraTarget); // update scrollCameraTarget position on path
 
-    // scrollCamera.position.copy(cameraPathTarget) // copy scrollCamera position to cameraPathTarget
-    // scrollCamera.lookAt(scrollCameraTarget)
+    scrollCamera.position.copy(cameraPathTarget) // copy scrollCamera position to cameraPathTarget
+    scrollCamera.lookAt(scrollCameraTarget)
 
     controls.update();
 
 
-    renderer.render(scene, workingCamera)
+    renderer.render(scene, scrollCamera)
     //renderer.setViewport()
 
     window.requestAnimationFrame(tick)
